@@ -99,19 +99,19 @@ Bubble Sort, Merge Sort, Quick Sort, and Heap Sort running time (already sorted)
 <img width="597" alt="Screen Shot 2024-11-13 at 8 42 34 PM" src="https://github.com/user-attachments/assets/2bac43f1-da65-44a9-8c0e-c6efe2fe953c">
 
 Bubble Sort, Merge Sort, Quick Sort, and Heap Sort running time (shuffled):
-<img width="597" alt="Screen Shot 2024-11-13 at 8 43 07 PM" src="https://github.com/user-attachments/assets/5d4e550f-3656-42d3-acf4-062cb90e6645">
+<img width="598" alt="Screen Shot 2024-11-14 at 11 21 55 AM" src="https://github.com/user-attachments/assets/1d95b8a0-3597-4b60-ba29-5bf745afdd5d">
 
 Bubble Sort, Merge Sort, Quick Sort, and Heap Sort running time (reversed):
-<img width="597" alt="Screen Shot 2024-11-13 at 8 43 34 PM" src="https://github.com/user-attachments/assets/2ea3dfd6-981a-443b-9f7a-71b4a28394e0">
+<img width="599" alt="Screen Shot 2024-11-14 at 11 22 14 AM" src="https://github.com/user-attachments/assets/48afb715-b0e9-4874-9b19-2533d0abf62c">
 
 Bubble Sort and Odd-Even Transposition Sort comparison (already sorted):
-<img width="598" alt="Screen Shot 2024-11-13 at 8 43 53 PM" src="https://github.com/user-attachments/assets/b91c7b0a-232a-4b71-aae6-1e0757e930e7">
+<img width="598" alt="Screen Shot 2024-11-14 at 11 22 33 AM" src="https://github.com/user-attachments/assets/eef92ce5-f086-4102-9586-fa1111a5590e">
 
 Bubble Sort and Odd-Even Transposition Sort comparison (shuffled):
-<img width="596" alt="Screen Shot 2024-11-13 at 8 44 11 PM" src="https://github.com/user-attachments/assets/2f7bfed7-f0f8-4403-8d4d-db9302eddbe2">
+<img width="597" alt="Screen Shot 2024-11-14 at 11 22 44 AM" src="https://github.com/user-attachments/assets/7199dfc8-2dfc-48de-b1f0-6eb38f240b89">
 
 Bubble Sort and Odd-Even Transposition Sort comparison (reversed):
-<img width="598" alt="Screen Shot 2024-11-13 at 8 44 27 PM" src="https://github.com/user-attachments/assets/e56d3d2c-4e04-4d54-bb71-2047abfe73e7">
+<img width="597" alt="Screen Shot 2024-11-14 at 11 22 55 AM" src="https://github.com/user-attachments/assets/f6f012fb-f3c8-4caa-92d2-279cca77d0e5">
 
 ## Submission:
 
