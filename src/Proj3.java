@@ -30,11 +30,9 @@ public class Proj3 {
         Collections.shuffle(shuffledPokemon);
         Collections.sort(reversedPokemon, Collections.reverseOrder());
 
-        // Measure time and comparisons for sorted, shuffled, and reversed lists
         double timeSorted = 0, timeShuffled = 0, timeReversed = 0;
         int comparisonsSorted = 0, comparisonsShuffled = 0, comparisonsReversed = 0;
 
-        // Sorted List
         long startTime = System.nanoTime();
         switch (algorithm) {
             case "bubble":
@@ -58,7 +56,6 @@ public class Proj3 {
         }
         timeSorted = (System.nanoTime() - startTime) / 1e9;
 
-        // Shuffled List
         startTime = System.nanoTime();
         switch (algorithm) {
             case "bubble":
@@ -79,7 +76,6 @@ public class Proj3 {
         }
         timeShuffled = (System.nanoTime() - startTime) / 1e9;
 
-        // Reversed List
         startTime = System.nanoTime();
         switch (algorithm) {
             case "bubble":
@@ -100,7 +96,6 @@ public class Proj3 {
         }
         timeReversed = (System.nanoTime() - startTime) / 1e9;
 
-        // Print results to console
         System.out.printf("\nResults for %s Sort on %d lines:\n", algorithm, numLines);
         System.out.println("--------------------------------------------------");
         System.out.printf("Sorted List - Time Taken: %.4f seconds", timeSorted);
@@ -123,7 +118,6 @@ public class Proj3 {
         }
         System.out.println("--------------------------------------------------");
 
-        // Append results to analysis.txt
         try (FileOutputStream output = new FileOutputStream("analysis.txt", true)) {
             String result = String.format("%s,%d,%.4f,%d,%.4f,%d,%.4f,%d\n",
                     algorithm, numLines, timeSorted, comparisonsSorted, timeShuffled,
@@ -131,18 +125,16 @@ public class Proj3 {
             output.write(result.getBytes());
         }
 
-        // Write sorted list to sorted.txt (overwrites each run with the sorted list result)
         try (FileWriter writer = new FileWriter("sorted.txt")) {
-            for (Pokemon p : sortedPokemon) { // Writes the sorted version to the file
+            for (Pokemon p : sortedPokemon) {
                 writer.write(p.toString() + "\n");
             }
         }
     }
 
-    // Method to load Pokemon data from the CSV file
     private static void loadPokemonData(String csvFile, ArrayList<Pokemon> pokemonList, int numLines) {
         try (Scanner scanner = new Scanner(new File(csvFile))) {
-            if (scanner.hasNextLine()) scanner.nextLine(); // Skip header
+            if (scanner.hasNextLine()) scanner.nextLine();
 
             int count = 0;
             while (scanner.hasNextLine() && count < numLines) {
@@ -180,16 +172,20 @@ public class Proj3 {
     public static <T extends Comparable<T>> void mergeSort(ArrayList<T> a, int left, int right) {
         if (left < right) {
             int mid = (left + right) / 2;
+            // Recursively sort the left half
             mergeSort(a, left, mid);
+            // Recursively sort the right half
             mergeSort(a, mid + 1, right);
+            // Merge both halves
             merge(a, left, mid, right);
         }
     }
 
     public static <T extends Comparable<T>> void merge(ArrayList<T> a, int left, int mid, int right) {
-        ArrayList<T> temp = new ArrayList<>(a);
+        ArrayList<T> temp = new ArrayList<>(a); // Temporary copy of the array
         int i = left, j = mid + 1, k = left;
 
+        // Merge process: compare elements from both halves and place in sorted order
         while (i <= mid && j <= right) {
             if (temp.get(i).compareTo(temp.get(j)) <= 0) {
                 a.set(k++, temp.get(i++));
@@ -198,29 +194,36 @@ public class Proj3 {
             }
         }
 
+        // Append remaining elements from left half
         while (i <= mid) a.set(k++, temp.get(i++));
+        // Append remaining elements from right half
         while (j <= right) a.set(k++, temp.get(j++));
     }
 
     // Quick Sort
     public static <T extends Comparable<T>> void quickSort(ArrayList<T> a, int left, int right) {
         if (left < right) {
+            // Partition array and get pivot index
             int pivotIndex = partition(a, left, right);
+            // Recursively sort elements before pivot
             quickSort(a, left, pivotIndex - 1);
+            // Recursively sort elements after pivot
             quickSort(a, pivotIndex + 1, right);
         }
     }
 
     public static <T extends Comparable<T>> int partition(ArrayList<T> a, int left, int right) {
-        T pivot = a.get(right);
+        T pivot = a.get(right); // Choose last element as pivot
         int i = left - 1;
 
         for (int j = left; j < right; j++) {
+            // Move smaller elements to the left of pivot
             if (a.get(j).compareTo(pivot) <= 0) {
                 i++;
                 swap(a, i, j);
             }
         }
+        // Place pivot in its correct position
         swap(a, i + 1, right);
         return i + 1;
     }
@@ -233,19 +236,23 @@ public class Proj3 {
 
     // Heap Sort
     public static <T extends Comparable<T>> void heapSort(ArrayList<T> a, int size) {
+        // Build max heap
         for (int i = size / 2 - 1; i >= 0; i--) heapify(a, size, i);
+        // Extract elements from heap
         for (int i = size - 1; i > 0; i--) {
-            swap(a, 0, i);
-            heapify(a, i, 0);
+            swap(a, 0, i); // Move current root to end
+            heapify(a, i, 0); // Call max heapify on reduced heap
         }
     }
 
     public static <T extends Comparable<T>> void heapify(ArrayList<T> a, int size, int root) {
         int largest = root, left = 2 * root + 1, right = 2 * root + 2;
 
+        // Find largest element among root, left, and right children
         if (left < size && a.get(left).compareTo(a.get(largest)) > 0) largest = left;
         if (right < size && a.get(right).compareTo(a.get(largest)) > 0) largest = right;
 
+        // Swap and continue heapifying if root is not largest
         if (largest != root) {
             swap(a, root, largest);
             heapify(a, size, largest);
@@ -258,6 +265,7 @@ public class Proj3 {
         boolean swapped;
         do {
             swapped = false;
+            // Bubble up the largest element in each pass
             for (int i = 1; i < size; i++) {
                 comparisons++;
                 if (a.get(i - 1).compareTo(a.get(i)) > 0) {
@@ -265,7 +273,7 @@ public class Proj3 {
                     swapped = true;
                 }
             }
-        } while (swapped);
+        } while (swapped); // Continue until no swaps are made
         return comparisons;
     }
 
