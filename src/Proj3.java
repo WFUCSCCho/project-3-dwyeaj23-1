@@ -1,4 +1,5 @@
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -7,6 +8,173 @@ import java.io.File;
 import java.io.FileNotFoundException;
 
 public class Proj3 {
+
+    public static void main(String[] args) throws IOException {
+        if (args.length != 3) {
+            System.err.println("Usage: java Proj3 <input file> <sorting algorithm> <number of lines>");
+            System.exit(1);
+        }
+
+        String inputFileName = args[0];
+        String algorithm = args[1].toLowerCase();
+        int numLines = Integer.parseInt(args[2]);
+
+        ArrayList<Pokemon> pokemonList = new ArrayList<>();
+        loadPokemonData(inputFileName, pokemonList, numLines);
+
+        ArrayList<Pokemon> sortedPokemon = new ArrayList<>(pokemonList);
+        ArrayList<Pokemon> shuffledPokemon = new ArrayList<>(pokemonList);
+        ArrayList<Pokemon> reversedPokemon = new ArrayList<>(pokemonList);
+
+        Collections.sort(sortedPokemon);
+        Collections.shuffle(shuffledPokemon);
+        Collections.sort(reversedPokemon, Collections.reverseOrder());
+
+        // Measure time and comparisons for sorted, shuffled, and reversed lists
+        double timeSorted = 0, timeShuffled = 0, timeReversed = 0;
+        int comparisonsSorted = 0, comparisonsShuffled = 0, comparisonsReversed = 0;
+
+        // Sorted List
+        long startTime = System.nanoTime();
+        switch (algorithm) {
+            case "bubble":
+                comparisonsSorted = bubbleSort(sortedPokemon, sortedPokemon.size());
+                break;
+            case "merge":
+                mergeSort(sortedPokemon, 0, sortedPokemon.size() - 1);
+                break;
+            case "quick":
+                quickSort(sortedPokemon, 0, sortedPokemon.size() - 1);
+                break;
+            case "heap":
+                heapSort(sortedPokemon, sortedPokemon.size());
+                break;
+            case "transposition":
+                comparisonsSorted = transpositionSort(sortedPokemon, sortedPokemon.size());
+                break;
+            default:
+                System.err.println("Unknown sorting algorithm: " + algorithm);
+                System.exit(1);
+        }
+        timeSorted = (System.nanoTime() - startTime) / 1e9;
+
+        // Shuffled List
+        startTime = System.nanoTime();
+        switch (algorithm) {
+            case "bubble":
+                comparisonsShuffled = bubbleSort(shuffledPokemon, shuffledPokemon.size());
+                break;
+            case "merge":
+                mergeSort(shuffledPokemon, 0, shuffledPokemon.size() - 1);
+                break;
+            case "quick":
+                quickSort(shuffledPokemon, 0, shuffledPokemon.size() - 1);
+                break;
+            case "heap":
+                heapSort(shuffledPokemon, shuffledPokemon.size());
+                break;
+            case "transposition":
+                comparisonsShuffled = transpositionSort(shuffledPokemon, shuffledPokemon.size());
+                break;
+        }
+        timeShuffled = (System.nanoTime() - startTime) / 1e9;
+
+        // Reversed List
+        startTime = System.nanoTime();
+        switch (algorithm) {
+            case "bubble":
+                comparisonsReversed = bubbleSort(reversedPokemon, reversedPokemon.size());
+                break;
+            case "merge":
+                mergeSort(reversedPokemon, 0, reversedPokemon.size() - 1);
+                break;
+            case "quick":
+                quickSort(reversedPokemon, 0, reversedPokemon.size() - 1);
+                break;
+            case "heap":
+                heapSort(reversedPokemon, reversedPokemon.size());
+                break;
+            case "transposition":
+                comparisonsReversed = transpositionSort(reversedPokemon, reversedPokemon.size());
+                break;
+        }
+        timeReversed = (System.nanoTime() - startTime) / 1e9;
+
+        // Print results to console
+        System.out.printf("\nResults for %s Sort on %d lines:\n", algorithm, numLines);
+        System.out.println("--------------------------------------------------");
+        System.out.printf("Sorted List - Time Taken: %.4f seconds", timeSorted);
+        if (algorithm.equals("bubble") || algorithm.equals("transposition")) {
+            System.out.printf(", Comparisons Made: %d\n", comparisonsSorted);
+        } else {
+            System.out.println();
+        }
+        System.out.printf("Shuffled List - Time Taken: %.4f seconds", timeShuffled);
+        if (algorithm.equals("bubble") || algorithm.equals("transposition")) {
+            System.out.printf(", Comparisons Made: %d\n", comparisonsShuffled);
+        } else {
+            System.out.println();
+        }
+        System.out.printf("Reversed List - Time Taken: %.4f seconds", timeReversed);
+        if (algorithm.equals("bubble") || algorithm.equals("transposition")) {
+            System.out.printf(", Comparisons Made: %d\n", comparisonsReversed);
+        } else {
+            System.out.println();
+        }
+        System.out.println("--------------------------------------------------");
+
+        // Append results to analysis.txt
+        try (FileOutputStream output = new FileOutputStream("analysis.txt", true)) {
+            String result = String.format("%s,%d,%.4f,%d,%.4f,%d,%.4f,%d\n",
+                    algorithm, numLines, timeSorted, comparisonsSorted, timeShuffled,
+                    comparisonsShuffled, timeReversed, comparisonsReversed);
+            output.write(result.getBytes());
+        }
+
+        // Write sorted list to sorted.txt (overwrites each run with the sorted list result)
+        try (FileWriter writer = new FileWriter("sorted.txt")) {
+            for (Pokemon p : sortedPokemon) { // Writes the sorted version to the file
+                writer.write(p.toString() + "\n");
+            }
+        }
+    }
+
+    // Method to load Pokemon data from the CSV file
+    private static void loadPokemonData(String csvFile, ArrayList<Pokemon> pokemonList, int numLines) {
+        try (Scanner scanner = new Scanner(new File(csvFile))) {
+            if (scanner.hasNextLine()) scanner.nextLine(); // Skip header
+
+            int count = 0;
+            while (scanner.hasNextLine() && count < numLines) {
+                String line = scanner.nextLine().trim();
+                if (line.isEmpty()) continue;
+
+                String[] attributes = line.split(",");
+                if (attributes.length >= 13) {
+                    int id = Integer.parseInt(attributes[0]);
+                    String name = attributes[1];
+                    String type1 = attributes[2];
+                    String type2 = attributes[3].equals("None") ? "" : attributes[3];
+                    int total = Integer.parseInt(attributes[4]);
+                    int hp = Integer.parseInt(attributes[5]);
+                    int attack = Integer.parseInt(attributes[6]);
+                    int defense = Integer.parseInt(attributes[7]);
+                    int specialAttack = Integer.parseInt(attributes[8]);
+                    int specialDefense = Integer.parseInt(attributes[9]);
+                    int speed = Integer.parseInt(attributes[10]);
+                    int generation = Integer.parseInt(attributes[11]);
+                    boolean isLegendary = Boolean.parseBoolean(attributes[12]);
+
+                    Pokemon pokemon = new Pokemon(id, name, type1, type2, total, hp, attack, defense,
+                            specialAttack, specialDefense, speed, generation, isLegendary);
+                    pokemonList.add(pokemon);
+                    count++;
+                }
+            }
+        } catch (FileNotFoundException e) {
+            System.err.println("CSV file not found: " + csvFile);
+        }
+    }
 
     // Merge Sort
     public static <T extends Comparable<T>> void mergeSort(ArrayList<T> a, int left, int right) {
@@ -128,108 +296,5 @@ public class Proj3 {
             }
         }
         return comparisons;
-    }
-
-    public static void main(String[] args) throws IOException {
-        if (args.length != 3) {
-            System.err.println("Usage: java Proj3 <input file> <sorting algorithm> <number of lines>");
-            System.exit(1);
-        }
-
-        String inputFileName = args[0];
-        String algorithm = args[1].toLowerCase();
-        int numLines = Integer.parseInt(args[2]);
-
-        ArrayList<Pokemon> pokemonList = new ArrayList<>();
-        loadPokemonData(inputFileName, pokemonList, numLines);
-
-        ArrayList<Pokemon> sortedPokemon = new ArrayList<>(pokemonList);
-        ArrayList<Pokemon> shuffledPokemon = new ArrayList<>(pokemonList);
-        ArrayList<Pokemon> reversedPokemon = new ArrayList<>(pokemonList);
-
-        Collections.sort(sortedPokemon);
-        Collections.shuffle(shuffledPokemon);
-        Collections.sort(reversedPokemon, Collections.reverseOrder());
-
-        long startTime, endTime;
-        int comparisons = 0;
-
-        switch (algorithm) {
-            case "bubble":
-                comparisons = bubbleSort(shuffledPokemon, shuffledPokemon.size());
-                break;
-            case "merge":
-                startTime = System.nanoTime();
-                mergeSort(shuffledPokemon, 0, shuffledPokemon.size() - 1);
-                endTime = System.nanoTime();
-                System.out.println("Merge Sort took: " + (endTime - startTime) / 1e9 + " seconds");
-                break;
-            case "quick":
-                startTime = System.nanoTime();
-                quickSort(shuffledPokemon, 0, shuffledPokemon.size() - 1);
-                endTime = System.nanoTime();
-                System.out.println("Quick Sort took: " + (endTime - startTime) / 1e9 + " seconds");
-                break;
-            case "heap":
-                startTime = System.nanoTime();
-                heapSort(shuffledPokemon, shuffledPokemon.size());
-                endTime = System.nanoTime();
-                System.out.println("Heap Sort took: " + (endTime - startTime) / 1e9 + " seconds");
-                break;
-            case "transposition":
-                comparisons = transpositionSort(shuffledPokemon, shuffledPokemon.size());
-                break;
-            default:
-                System.err.println("Unknown sorting algorithm: " + algorithm);
-                System.exit(1);
-        }
-
-        // Log results to analysis.txt
-        try (FileOutputStream output = new FileOutputStream("analysis.txt", true)) {
-            String result = String.format("%s,%d,%d\n", algorithm, numLines, comparisons);
-            output.write(result.getBytes());
-        }
-    }
-
-    // Method to load Pokemon data from the CSV file
-    private static void loadPokemonData(String csvFile, ArrayList<Pokemon> pokemonList, int numLines) {
-        try (Scanner scanner = new Scanner(new File(csvFile))) {
-            // Skip the first line (header)
-            if (scanner.hasNextLine()) {
-                scanner.nextLine();
-            }
-
-            int count = 0;
-            while (scanner.hasNextLine() && count < numLines) {
-                String line = scanner.nextLine().trim();
-                if (line.isEmpty()) continue;
-
-                // Assuming CSV format: id,name,type1,type2,total,hp,attack,defense,specialAttack,specialDefense,speed,generation,isLegendary
-                String[] attributes = line.split(",");
-                if (attributes.length >= 13) {  // Ensure there are enough columns
-                    int id = Integer.parseInt(attributes[0]);
-                    String name = attributes[1];
-                    String type1 = attributes[2];
-                    String type2 = attributes[3].equals("None") ? "" : attributes[3];
-                    int total = Integer.parseInt(attributes[4]);
-                    int hp = Integer.parseInt(attributes[5]);
-                    int attack = Integer.parseInt(attributes[6]);
-                    int defense = Integer.parseInt(attributes[7]);
-                    int specialAttack = Integer.parseInt(attributes[8]);
-                    int specialDefense = Integer.parseInt(attributes[9]);
-                    int speed = Integer.parseInt(attributes[10]);
-                    int generation = Integer.parseInt(attributes[11]);
-                    boolean isLegendary = Boolean.parseBoolean(attributes[12]);
-
-                    // Create a new Pokemon object and add it to the list
-                    Pokemon pokemon = new Pokemon(id, name, type1, type2, total, hp, attack, defense,
-                            specialAttack, specialDefense, speed, generation, isLegendary);
-                    pokemonList.add(pokemon);
-                    count++;
-                }
-            }
-        } catch (FileNotFoundException e) {
-            System.err.println("CSV file not found: " + csvFile);
-        }
     }
 }
