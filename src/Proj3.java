@@ -1,3 +1,14 @@
+/***************************************************************************
+ * @file: Proj3.java
+ * @description: This program reads a specified number of Pokémon entries from a CSV file,
+ *               sorts them using various sorting algorithms (Bubble, Merge, Quick, Heap, and
+ *               Odd-Even Transposition), and measures the time taken and comparisons made
+ *               (where applicable) for sorted, shuffled, and reversed lists. Results are
+ *               printed to the console and saved to output files.
+ * @author: Andrew Dwyer
+ * @date: November 14, 2024
+ ***************************************************************************/
+
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -15,6 +26,7 @@ public class Proj3 {
             System.exit(1);
         }
 
+        //Make the arguments into variables
         String inputFileName = args[0];
         String algorithm = args[1].toLowerCase();
         int numLines = Integer.parseInt(args[2]);
@@ -22,6 +34,7 @@ public class Proj3 {
         ArrayList<Pokemon> pokemonList = new ArrayList<>();
         loadPokemonData(inputFileName, pokemonList, numLines);
 
+        //Create the three different ArrayLists
         ArrayList<Pokemon> sortedPokemon = new ArrayList<>(pokemonList);
         ArrayList<Pokemon> shuffledPokemon = new ArrayList<>(pokemonList);
         ArrayList<Pokemon> reversedPokemon = new ArrayList<>(pokemonList);
@@ -30,6 +43,7 @@ public class Proj3 {
         Collections.shuffle(shuffledPokemon);
         Collections.sort(reversedPokemon, Collections.reverseOrder());
 
+        //Track different times and comparisons
         double timeSorted = 0, timeShuffled = 0, timeReversed = 0;
         int comparisonsSorted = 0, comparisonsShuffled = 0, comparisonsReversed = 0;
 
@@ -118,6 +132,7 @@ public class Proj3 {
         }
         System.out.println("--------------------------------------------------");
 
+        //Write to analysis.txt
         try (FileOutputStream output = new FileOutputStream("analysis.txt", true)) {
             String result = String.format("%s,%d,%.4f,%d,%.4f,%d,%.4f,%d\n",
                     algorithm, numLines, timeSorted, comparisonsSorted, timeShuffled,
@@ -125,6 +140,7 @@ public class Proj3 {
             output.write(result.getBytes());
         }
 
+        //Write to sorted.txt
         try (FileWriter writer = new FileWriter("sorted.txt")) {
             for (Pokemon p : sortedPokemon) {
                 writer.write(p.toString() + "\n");
@@ -132,6 +148,7 @@ public class Proj3 {
         }
     }
 
+    //Method to load Pokemon.csv into ArrayList
     private static void loadPokemonData(String csvFile, ArrayList<Pokemon> pokemonList, int numLines) {
         try (Scanner scanner = new Scanner(new File(csvFile))) {
             if (scanner.hasNextLine()) scanner.nextLine();
